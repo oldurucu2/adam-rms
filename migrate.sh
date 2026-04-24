@@ -16,6 +16,10 @@ if [[ -v DEV_MODE ]] && [[ "${DEV_MODE}" == 'true' ]]; then
     echo "AdamRMS - Running in DEV MODE"
 fi
 
+# Fix PHP session permissions
+mkdir -p /var/lib/php/sessions
+chmod 1777 /var/lib/php/sessions
+
 echo "AdamRMS - Starting Apache2"
 source /etc/apache2/envvars
 exec apache2 -D FOREGROUND
