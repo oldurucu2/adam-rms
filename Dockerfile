@@ -60,8 +60,5 @@ COPY ./phinx.php /var/www/html
 COPY ./migrate.sh /var/www/html
 RUN chmod +x /var/www/html/migrate.sh
 
-# Switch to the base image non-privileged user that the app will run under.
-USER www-data
-
 SHELL ["sh"]
 ENTRYPOINT ["/var/www/html/migrate.sh"]
