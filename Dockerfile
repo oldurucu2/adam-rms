@@ -19,7 +19,6 @@ FROM ubuntu:22.04 AS final
 
 LABEL org.opencontainers.image.source=https://github.com/adam-rms/adam-rms
 
-# Avoid interactive prompts during install
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install Apache, PHP 8.3 and extensions
@@ -37,7 +36,7 @@ RUN apt-get update && apt-get install -y \
     libapache2-mod-php8.3 \
     && rm -rf /var/lib/apt/lists/*
 
-# Fix Apache MPM - this works 100% on ubuntu
+# Fix Apache MPM
 RUN a2dismod mpm_event mpm_worker 2>/dev/null; \
     a2enmod mpm_prefork php8.3 rewrite
 
@@ -54,17 +53,18 @@ RUN sed -ri -e 's!/var/www/html!/var/www/html/src!g' /etc/apache2/sites-availabl
 # Enable apache mod rewrite
 RUN a2enmod rewrite
 
-# Copy the app dependencies from the previous install stage.
-COPY --from=deps /app/vendor/ /var/www/html/vendor
-# Copy the app files from the app directory.
-COPY ./src /var/www/html/src
+# Create session directory with correct permissions
+RUN mkdir -p /var/lib/php/sessions && chmod 1777 /var/lib/php/sessions
 
-# Copy the database related files
+# Copy application files
+COPY --from=deps /app/vendor/ /var/www/html/vendor
+COPY ./src /var/www/html/src
 COPY ./db /var/www/html/db
 COPY ./phinx.php /var/www/html
 COPY ./migrate.sh /var/www/html
+
 RUN chmod +x /var/www/html/migrate.sh
-RUN chmod 1777 /var/lib/php/sessions
+
 EXPOSE 80
 
 SHELL ["/bin/bash", "-c"]
