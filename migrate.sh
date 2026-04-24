@@ -21,6 +21,12 @@ if [[ -v DEV_MODE ]] && [[ "${DEV_MODE}" == 'true' ]]; then
     echo "AdamRMS - Running in DEV MODE"
 fi
 
+# Fix Apache MPM conflict
+echo "AdamRMS - Fixing Apache MPM"
+a2dismod mpm_event 2>/dev/null || true
+a2dismod mpm_worker 2>/dev/null || true
+a2enmod mpm_prefork 2>/dev/null || true
+
 # Start Server
 echo "AdamRMS - Starting Apache2"
 apache2-foreground
