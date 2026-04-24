@@ -64,7 +64,7 @@ COPY ./db /var/www/html/db
 COPY ./phinx.php /var/www/html
 COPY ./migrate.sh /var/www/html
 RUN chmod +x /var/www/html/migrate.sh
-
+RUN chmod 1777 /var/lib/php/sessions
 EXPOSE 80
 
 SHELL ["/bin/bash", "-c"]
