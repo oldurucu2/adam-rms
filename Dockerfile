@@ -14,10 +14,7 @@ FROM composer:lts AS deps
 
 WORKDIR /app
 
-RUN --mount=type=bind,source=composer.json,target=composer.json \
-    --mount=type=bind,source=composer.lock,target=composer.lock \
-    --mount=type=cache,target=/tmp/cache \
-    composer install --no-dev --no-interaction --ignore-platform-reqs
+RUN composer install --no-dev --no-interaction --ignore-platform-reqs
 
 ################################################################################
 # PHP Build Stage
