@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# This file is used by the docker container to build the database schema and seed the database with initial data
-
 cd /var/www/html
 
 # Validate expected environment variables
@@ -13,7 +11,6 @@ fi
 
 # Database migration & seed
 echo "AdamRMS - Starting Migration Script"
-
 php vendor/bin/phinx migrate -e production
 php vendor/bin/phinx seed:run -e production
 
@@ -21,12 +18,7 @@ if [[ -v DEV_MODE ]] && [[ "${DEV_MODE}" == 'true' ]]; then
     echo "AdamRMS - Running in DEV MODE"
 fi
 
-# Fix Apache MPM conflict
-echo "AdamRMS - Fixing Apache MPM"
-a2dismod mpm_event 2>/dev/null || true
-a2dismod mpm_worker 2>/dev/null || true
-a2enmod mpm_prefork 2>/dev/null || true
-
-# Start Server
+# Start Apache
 echo "AdamRMS - Starting Apache2"
-apache2-foreground
+source /etc/apache2/envvars
+exec apache2 -D FOREGROUND
