@@ -44,7 +44,10 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-install -j$(nproc) gd pdo pdo_mysql mysqli intl zip
-
+# Fix Apache MPM conflict
+RUN a2dismod mpm_event || true \
+ && a2dismod mpm_worker || true \
+ && a2enmod mpm_prefork
 # Copy our php.ini file
 
 RUN echo "\npost_max_size=64M\n" >> "$PHP_INI_DIR/php.ini"
